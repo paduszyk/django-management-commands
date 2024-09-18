@@ -38,6 +38,10 @@ dynamic = ["version"]
 dev = [
   "mypy ~= 1.11",
   "pre-commit ~= 3.8",
+  "pytest ~= 8.3",
+  "pytest-custom-exit-code ~= 0.3",
+  "pytest-mock ~= 3.14",
+  "pytest-randomly ~= 3.15",
   "ruff ~= 0.6",
 ]
 
@@ -54,6 +58,9 @@ target-version = "py39"
 select = ["ALL"]
 ignore = ["ANN", "D1", "N"]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ARG", "E501", "FBT", "PLR2004", "S101"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["management_commands"]
 required-imports = [
@@ -66,3 +73,17 @@ convention = "google"
 [tool.mypy]
 mypy_path = "src/"
 strict = true
+
+[[tool.mypy.overrides]]
+module = [
+  "tests.*",
+]
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+addopts = [
+  "-ra",
+  "--suppress-no-test-exit-code",
+]
+pythonpath = [".", "src/"]
+testpaths = ["tests/"]
