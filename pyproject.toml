@@ -46,6 +46,7 @@ dev = [
   "nox == 2024.4.15",
   "pre-commit ~= 3.8",
   "pytest ~= 8.3",
+  "pytest-cov ~= 5.0",
   "pytest-custom-exit-code ~= 0.3",
   "pytest-django ~= 4.9",
   "pytest-mock ~= 3.14",
@@ -118,6 +119,25 @@ addopts = [
   "-ra",
   "--suppress-no-test-exit-code",
   "--ds=tests.settings",
+  "--cov",
+  "--cov-append",
+  "--cov-branch",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-report=xml",
 ]
 pythonpath = [".", "src/"]
 testpaths = ["tests/"]
+
+[tool.coverage.run]
+source = ["src/"]
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+]
+
+[tool.coverage.html]
+directory = ".htmlcov/"
+
+[tool.coverage.xml]
+output = "coverage.xml"

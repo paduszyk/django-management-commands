@@ -1,9 +1,12 @@
 __pycache__/
+.coverage
+.htmlcov/
 .mypy_cache/
 .nox/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
 build/
+coverage.xml
 dist/
 node_modules/
