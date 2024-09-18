@@ -2,6 +2,7 @@
 
 [![Pre-commit.ci](https://results.pre-commit.ci/badge/github/paduszyk/django-management-commands/main.svg)][pre-commit.ci]
 
+[![Nox](https://img.shields.io/badge/%f0%9f%a6%8a-Nox-d85e00)][nox]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)][ruff]
 [![Mypy](https://img.shields.io/badge/type--checked-mypy-blue?logo=python)][mypy]
 [![Prettier](https://img.shields.io/badge/code_style-Prettier-1e2b33?logo=prettier)][prettier]
@@ -14,6 +15,7 @@ Released under the [MIT license][license].
 [conventional-commits]: https://www.conventionalcommits.org/
 [license]: https://github.com/paduszyk/django-management-commands/blob/main/LICENSE
 [mypy]: https://mypy.readthedocs.io
+[nox]: https://nox.thea.codes/
 [pre-commit.ci]: https://results.pre-commit.ci/latest/github/paduszyk/django-management-commands/main
 [prettier]: https://prettier.io
 [ruff]: https://docs.astral.sh/ruff/
