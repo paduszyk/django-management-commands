@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-management-commands"
+description = "Modular discovery, aliasing, and sequencing of Django commands"
+authors = [
+  { name = "Kamil Paduszyński", email = "92403542+paduszyk@users.noreply.github.com" },
+]
+readme = "docs/README.md"
+keywords = [
+  "django",
+  "django-application",
+  "django-commands",
+  "django-management-commands",
+]
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">= 3.9"
+dynamic = ["version"]
+
+[project.urls]
+"Source" = "https://github.com/paduszyk/django-management-commands"
+
+[tool.setuptools.dynamic]
+version = { attr = "management_commands.__version__" }
