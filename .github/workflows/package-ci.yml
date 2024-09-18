@@ -1,0 +1,66 @@
+name: Package CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sessions:
+    runs-on: ubuntu-latest
+    outputs:
+      build-sessions: ${{ steps.matrix.outputs.build-sessions }}
+      lint-sessions: ${{ steps.matrix.outputs.lint-sessions }}
+      test-sessions: ${{ steps.matrix.outputs.test-sessions }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wntrblm/nox@main
+      - id: matrix
+        run: |
+          for session in build lint test; do
+            echo "${session}-sessions=$(nox -t $session -l --json | jq -c '[.[].session]')" >> $GITHUB_OUTPUT
+          done
+  build:
+    name: ${{ matrix.session }}
+    needs:
+      - sessions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        session: ${{ fromJson(needs.sessions.outputs.build-sessions) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wntrblm/nox@main
+      - run: nox -s "${{ matrix.session }}"
+  lint:
+    name: ${{ matrix.session }}
+    needs:
+      - sessions
+      - build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        session: ${{ fromJson(needs.sessions.outputs.lint-sessions) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wntrblm/nox@main
+      - run: nox -s "${{ matrix.session }}"
+  test:
+    name: ${{ matrix.session }}
+    needs:
+      - sessions
+      - build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        session: ${{ fromJson(needs.sessions.outputs.test-sessions) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wntrblm/nox@main
+      - run: nox -s "${{ matrix.session }}"
