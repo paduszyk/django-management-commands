@@ -29,10 +29,14 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 requires-python = ">= 3.9"
+dependencies = [
+  "typing-extensions ~= 4.12",
+]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
+  "mypy ~= 1.11",
   "pre-commit ~= 3.8",
   "ruff ~= 0.6",
 ]
@@ -48,7 +52,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D1", "N"]
+ignore = ["ANN", "D1", "N"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["management_commands"]
@@ -58,3 +62,7 @@ required-imports = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.mypy]
+mypy_path = "src/"
+strict = true
