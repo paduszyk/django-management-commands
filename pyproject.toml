@@ -31,6 +31,11 @@ classifiers = [
 requires-python = ">= 3.9"
 dynamic = ["version"]
 
+[project.optional-dependencies]
+dev = [
+  "pre-commit ~= 3.8",
+]
+
 [project.urls]
 "Source" = "https://github.com/paduszyk/django-management-commands"
 

@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.6.0"
+    hooks:
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: "v3.3.3"
+    hooks:
+      - id: prettier
+        args:
+          - --no-error-on-unmatched-pattern
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: "v0.14.0"
+    hooks:
+      - id: markdownlint-cli2
+
+ci:
+  autofix_commit_msg: "style: fix issues from Pre-commit hooks"
+  autoupdate_commit_msg: "chore(deps-dev): update Pre-commit hooks"
