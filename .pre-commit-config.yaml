@@ -27,6 +27,8 @@ repos:
     rev: "v1.11.2"
     hooks:
       - id: mypy
+        additional_dependencies:
+          - django-stubs[compatible-mypy] ~= 5.0
 
 ci:
   autofix_commit_msg: "style: fix issues from Pre-commit hooks"
