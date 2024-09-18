@@ -1,0 +1,7 @@
+config:
+  default: true
+globs:
+  - "docs/**/*.md"
+ignores:
+  - ".github/**/*.md"
+  - "LICENSE"
