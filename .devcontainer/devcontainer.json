@@ -1,0 +1,27 @@
+{
+  "build": {
+    "args": {
+      "PYTHON_VERSIONS": "3.12 3.11 3.10 3.9"
+    },
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "python.defaultInterpreterPath": "~/.pyenv/versions/venv/bin/python",
+        "python.terminal.activateEnvironment": true
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "postCreateCommand": ".devcontainer/postCreateCommand.sh",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}
