@@ -34,6 +34,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
   "pre-commit ~= 3.8",
+  "ruff ~= 0.6",
 ]
 
 [project.urls]
@@ -41,3 +42,19 @@ dev = [
 
 [tool.setuptools.dynamic]
 version = { attr = "management_commands.__version__" }
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D1", "N"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["management_commands"]
+required-imports = [
+  "from __future__ import annotations",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

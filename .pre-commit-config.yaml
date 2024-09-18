@@ -18,6 +18,11 @@ repos:
     rev: "v0.14.0"
     hooks:
       - id: markdownlint-cli2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.6.5"
+    hooks:
+      - id: ruff
+      - id: ruff-format
 
 ci:
   autofix_commit_msg: "style: fix issues from Pre-commit hooks"
