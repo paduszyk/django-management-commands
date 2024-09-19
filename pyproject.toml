@@ -42,6 +42,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
+  "commitizen ~= 3.29",
   "django-stubs[compatible-mypy] ~= 5.0",
   "nox == 2024.4.15",
   "pre-commit ~= 3.8",
@@ -141,3 +142,10 @@ directory = ".htmlcov/"
 
 [tool.coverage.xml]
 output = "coverage.xml"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+version_files = [
+  "src/management_commands/__init__.py:__version__",
+]
