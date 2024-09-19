@@ -1,5 +1,10 @@
 # django-management-commands
 
+[![PyPI: Version](https://img.shields.io/pypi/v/django-management-commands?logo=pypi&logoColor=white)][pypi]
+[![PyPI: Python](https://img.shields.io/pypi/pyversions/django-management-commands?logo=python&logoColor=white)][pypi]
+[![PyPI: Django](https://img.shields.io/pypi/djversions/django-management-commands?logo=django&label=django&color=0c4b33)][pypi]
+[![PyPI: License](https://img.shields.io/pypi/l/django-management-commands)][pypi]
+
 [![Pre-commit.ci](https://results.pre-commit.ci/badge/github/paduszyk/django-management-commands/main.svg)][pre-commit.ci]
 [![CI](https://img.shields.io/github/actions/workflow/status/paduszyk/django-management-commands/package-ci.yml?logo=github&label=CI)][ci]
 [![Codecov](https://img.shields.io/codecov/c/github/paduszyk/django-management-commands?logo=codecov)][codecov]
