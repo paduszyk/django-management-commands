@@ -145,7 +145,7 @@ output = "coverage.xml"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "1.0.0"
 version_files = [
   "src/management_commands/__init__.py:__version__",
 ]
