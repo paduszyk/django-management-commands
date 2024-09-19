@@ -1,0 +1,15 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: Code of Conduct
+    url: https://github.com/paduszyk/django-management-commands/blob/main/docs/CODE_OF_CONDUCT.md
+    about: >-
+      All contributors must adhere to our Code of Conduct.
+  - name: Contributing Guide
+    url: https://github.com/paduszyk/django-management-commands/blob/main/docs/CONTRIBUTING.md
+    about: >-
+      Please read this guide before making any contributions.
+  - name: GitHub Community Guidelines
+    url: https://docs.github.com/en/site-policy/github-terms/github-community-guidelines
+    about: >-
+      This article outlines GitHub's rules for user behavior and community conduct.
