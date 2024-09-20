@@ -30,8 +30,8 @@ def import_command_class(dotted_path: str) -> type[BaseCommand]:
 def get_command_paths(name: str, app_label: str | None = None) -> list[str]:
     if not app_label:
         app_names = [
-            "django.core",
             *(app_config.name for app_config in reversed(list(apps.get_app_configs()))),
+            "django.core",
         ]
 
         modules_paths = [f"{module}.{name}.Command" for module in settings.MODULES]
