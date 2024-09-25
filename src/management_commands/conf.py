@@ -8,7 +8,7 @@ import appconf
 
 
 def _is_identifier(s: str) -> bool:
-    return s.isidentifier() and not iskeyword(s)
+    return s.replace("-", "_").isidentifier() and not iskeyword(s)
 
 
 def _is_dotted_path(s: str, /, *, min_parts: int = 0) -> bool:
@@ -53,7 +53,7 @@ class ManagementCommandsConf(appconf.AppConf):  # type: ignore[misc]
             if not _is_identifier(key):
                 msg = (
                     f"invalid key {key!r} in PATHS; "
-                    f"keys must be valid Python identifiers"
+                    f"keys must be valid Python identifiers (with hyphens allowed)"
                 )
 
                 raise self.improperly_configured(msg, "paths.key")
@@ -103,7 +103,7 @@ class ManagementCommandsConf(appconf.AppConf):  # type: ignore[misc]
             if not _is_identifier(key):
                 msg = (
                     f"invalid key {key!r} in ALIASES; "
-                    f"keys must be valid Python identifiers"
+                    f"keys must be valid Python identifiers (with hyphens allowed)"
                 )
 
                 raise self.improperly_configured(msg, "aliases.key")

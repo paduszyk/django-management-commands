@@ -124,15 +124,15 @@ Example:
 
 ```python
 MANAGEMENT_COMMANDS_PATHS = {
-    "mycommand": "mysite.commands.MyCommand",
+    "my-command": "mysite.commands.MyCommand",
 }
 ```
 
-You can now run the custom command `mycommand` implemented in the `MyCommand` class
+You can now run the custom command `my-command` implemented in the `MyCommand` class
 from the `mysite.commands` module:
 
 ```console
-python manage.py mycommand
+python manage.py my-command
 ```
 
 > In Django, the class representing a command must be named `Command`. The plugin
@@ -141,8 +141,8 @@ python manage.py mycommand
 
 **Important Notes:**
 
-- All keys and values must be valid Python identifiers and absolute dotted paths,
-  respectively.
+- All keys and values must be valid Python identifiers (with hyphens allowed) and
+  absolute dotted paths, respectively.
 - Paths must point to command classes, not modules.
 - Commands must subclass `django.core.management.base.BaseCommand`.
 - This setting takes precedence over others when discovering commands.
@@ -214,7 +214,7 @@ Example:
 
 ```python
 MANAGEMENT_COMMANDS_ALIASES = {
-    "fullcheck": [
+    "full-check": [
         "check --fail-level ERROR --deploy",
         "makemigrations --check --dry-run --no-input",
         "migrate --no-input",
@@ -222,10 +222,10 @@ MANAGEMENT_COMMANDS_ALIASES = {
 }
 ```
 
-You can now execute all the commands aliased by `fullcheck` with a single command:
+You can now execute all the commands aliased by `full-check` with a single command:
 
 ```console
-python manage.py fullcheck
+python manage.py full-check
 ```
 
 Aliases can refer to commands defined in the `MANAGEMENT_COMMANDS_PATHS` setting
@@ -233,7 +233,7 @@ or other aliases.
 
 **Important Notes:**
 
-- Keys must be valid Python identifiers.
+- Keys must be valid Python identifiers (with hyphens allowed).
 - Values should be command expressions with parsable arguments and options.
 - Circular references within aliases are not allowed, as they lead to infinite recursion.
 
