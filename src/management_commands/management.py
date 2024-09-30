@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import sys
 from typing import TYPE_CHECKING
 
@@ -7,7 +8,11 @@ from django.core.management import ManagementUtility as BaseManagementUtility
 from django.core.management.color import color_style
 
 from .conf import settings
-from .core import import_command_class, load_command_class
+from .core import (
+    get_commands_from_modules_and_submodules,
+    import_command_class,
+    load_command_class,
+)
 
 if TYPE_CHECKING:
     from django.core.management.base import BaseCommand
@@ -43,11 +48,21 @@ class ManagementUtility(BaseManagementUtility):
             if (aliases := settings.ALIASES)
             else []
         )
+        modules = get_commands_from_modules_and_submodules()
+        modules_usage = (
+            [
+                style.NOTICE(f"[django-management-commands: {module}]"),
+                *[f"    {file}" for file in modules[module]],
+                "",
+            ]
+            for module in modules
+        )
 
         usage_list = usage.split("\n")
         usage_list.append("")
         usage_list.extend(commands_usage)
         usage_list.extend(aliases_usage)
+        usage_list.extend(itertools.chain(*modules_usage))
 
         return "\n".join(usage_list)
 

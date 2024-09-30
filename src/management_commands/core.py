@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import contextlib
+import importlib
+import pkgutil
 from contextlib import suppress
 
 from django.apps.registry import apps
@@ -25,6 +28,49 @@ def import_command_class(dotted_path: str) -> type[BaseCommand]:
         raise CommandTypeError(command_class)
 
     return command_class
+
+
+def _discover_commands_in_module(module: str) -> list[str]:
+    commands: list[str] = []
+    try:
+        files_in_dir = [
+            name
+            for _, name, is_pkg in pkgutil.iter_modules(
+                importlib.import_module(module).__path__,
+            )
+            if not is_pkg and not name.startswith("_")
+        ]
+    except ImportError:  # module doesn't exist
+        return commands
+
+    for file in files_in_dir:
+        with (
+            contextlib.suppress(CommandImportError),
+            contextlib.suppress(CommandTypeError),
+        ):
+            import_command_class(f"{module}.{file}.Command")
+            commands.append(file)
+
+    return commands
+
+
+def get_commands_from_modules_and_submodules() -> dict[str, list[str]]:
+    commands = {}
+    for module in settings.MODULES:
+        if module_commands := _discover_commands_in_module(module):
+            commands[module] = module_commands
+
+    for app in apps.get_app_configs():
+        for submodule in settings.SUBMODULES:
+            if app.name == "django.core" or submodule == "management.commands":
+                continue
+
+            if module_commands := _discover_commands_in_module(
+                f"{app.name}.{submodule}",
+            ):
+                commands[app.name] = module_commands
+
+    return commands
 
 
 def get_command_paths(name: str, app_label: str | None = None) -> list[str]:
