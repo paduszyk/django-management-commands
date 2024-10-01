@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import importlib
 import pkgutil
+import typing
 from contextlib import suppress
 
 from django.apps.registry import apps
@@ -17,6 +18,9 @@ from .exceptions import (
     CommandTypeError,
 )
 
+if typing.TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 def import_command_class(dotted_path: str) -> type[BaseCommand]:
     try:
@@ -30,16 +34,18 @@ def import_command_class(dotted_path: str) -> type[BaseCommand]:
     return command_class
 
 
+def iterate_modules(dotted_path: str) -> Iterator[str]:
+    for _, name, is_pkg in pkgutil.iter_modules(
+        importlib.import_module(dotted_path).__path__,
+    ):
+        if not is_pkg and not name.startswith("_"):
+            yield name
+
+
 def _discover_commands_in_module(module: str) -> list[str]:
     commands: list[str] = []
     try:
-        files_in_dir = [
-            name
-            for _, name, is_pkg in pkgutil.iter_modules(
-                importlib.import_module(module).__path__,
-            )
-            if not is_pkg and not name.startswith("_")
-        ]
+        files_in_dir = list(iterate_modules(module))
     except ImportError:  # module doesn't exist
         return commands
 
