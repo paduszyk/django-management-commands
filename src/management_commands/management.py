@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING
 
 from django.core.management import ManagementUtility as BaseManagementUtility
+from django.core.management import call_command as base_call_command
+from django.core.management.base import BaseCommand
 from django.core.management.color import color_style
 
 from .conf import settings
 from .core import import_command_class, load_command_class
 
-if TYPE_CHECKING:
-    from django.core.management.base import BaseCommand
-
 if sys.version_info >= (3, 12):
-    from typing import override
+    from typing import Any, override
 else:
     from typing_extensions import override
 
@@ -88,3 +86,25 @@ class ManagementUtility(BaseManagementUtility):
 def execute_from_command_line(argv: list[str] | None = None) -> None:
     utility = ManagementUtility(argv)
     utility.execute()
+
+
+def call_command(command_name: str, *args: Any, **options: Any) -> Any:
+    if isinstance(command_name, BaseCommand):
+        return base_call_command(command_name, *args, **options)
+
+    if dotted_path := settings.PATHS.get(command_name):
+        command_class = import_command_class(dotted_path)
+    elif command_name in settings.ALIASES:
+        msg = "Running aliases from call_command is not supported"
+        raise ValueError(msg)
+    else:
+        try:
+            app_label, name = command_name.rsplit(".", 1)
+        except ValueError:
+            app_label, name = None, command_name
+
+        command_class = load_command_class(name, app_label)
+
+    command = command_class()
+
+    return base_call_command(command, *args, **options)
