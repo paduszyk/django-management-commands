@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
 
 from django.core.management import ManagementUtility as BaseManagementUtility
 from django.core.management import call_command as base_call_command
@@ -11,7 +12,7 @@ from .conf import settings
 from .core import import_command_class, load_command_class
 
 if sys.version_info >= (3, 12):
-    from typing import Any, override
+    from typing import override
 else:
     from typing_extensions import override
 
