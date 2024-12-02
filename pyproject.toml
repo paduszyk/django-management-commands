@@ -42,7 +42,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-  "commitizen ~= 3.29",
+  "commitizen >= 3.29,< 5.0",
   "django-stubs[compatible-mypy] ~= 5.0",
   "nox == 2024.10.9",
   "pre-commit ~= 3.8",
