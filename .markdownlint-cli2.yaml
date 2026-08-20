@@ -1,5 +1,6 @@
 config:
   default: true
+  MD059: false
 globs:
   - "docs/**/*.md"
 ignores:
