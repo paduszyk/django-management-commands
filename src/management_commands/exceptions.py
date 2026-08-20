@@ -9,8 +9,7 @@ class ManagementCommandsException(Exception):
     def __init__(self, msg: str | None = None, **kwargs: str) -> None:
         super().__init__(
             msg
-            if msg
-            else (
+            or (
                 msg_template.format(**kwargs)
                 if (msg_template := getattr(type(self), "msg", None)) and kwargs
                 else ""
