@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(params=get_commands())
 def django_core_command_name(request: pytest.FixtureRequest) -> str:
-    return cast(str, request.param)
+    return cast("str", request.param)
 
 
 def test_execute_from_command_line_help_displays_paths_and_aliases(

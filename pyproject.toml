@@ -64,7 +64,7 @@ pytest = [
   "pytest-randomly>=4.0.1",
 ]
 ruff = [
-  "ruff~=0.6.0",
+  "ruff>=0.16.4",
 ]
 
 [project.urls]
@@ -78,7 +78,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ANN", "D1", "N"]
+ignore = ["ANN", "CPY", "D1", "N"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["ARG", "E501", "FBT", "PLR2004", "S101"]
