@@ -88,36 +88,24 @@ environment across all contributors.
    > Ensure that Node.js is installed. If not, [download][node.js] and install the
    > latest release.
 
-3. Install [`pyenv`][pyenv] and [`pyenv-virtualenv`][pyenv-virtualenv].
+3. Install [uv][uv].
 
-4. Install the necessary Python versions, as specified in [`pyproject.toml`][pyproject.toml]:
+4. Install the package and development dependencies from the lockfile:
 
    ```console
-   pyenv install <VERSION>
+   uv sync --locked
    ```
 
-5. Create and activate a virtual environment:
+5. Install the [Pre-commit][pre-commit] hooks:
 
    ```console
-   pyenv virtualenv venv && pyenv activate venv
-   ```
-
-6. Install the package in development mode:
-
-   ```console
-   pip install -e ".[dev]"
-   ```
-
-7. Install the [Pre-commit][pre-commit] hooks:
-
-   ```console
-   pre-commit install --install-hooks
+   uv run pre-commit install --install-hooks
    ```
 
 Once the setup is complete, you can run [Nox][nox] to ensure everything works:
 
 ```console
-nox
+uv run nox
 ```
 
 > For more details, refer to the [Nox](#nox) section.
@@ -145,20 +133,20 @@ If so, click the badge above to get started!
 
 ## Nox
 
-The project uses [Nox][nox] to build, lint, format, and type-check the package,
-as well as to run tests across various Python and Django environments and measure
-test coverage.
+The project uses [Nox][nox], with [nox-uv][nox-uv], to build, lint, format, and
+type-check the package, as well as to run tests across various Python and Django
+environments and measure test coverage.
 
 To list all available Nox sessions, run:
 
 ```console
-nox -l
+uv run nox -l
 ```
 
 To perform a complete check, run:
 
 ```console
-nox
+uv run nox
 ```
 
 > For more information, refer to the project's [`noxfile.py`][noxfile.py] and/or
@@ -170,7 +158,7 @@ To check the Python code quality, format and type annotations, run the sessions
 tagged with `lint`:
 
 ```console
-nox -t lint
+uv run nox -t lint
 ```
 
 This will run the [`ruff`][ruff]'s linter and formatter and [`mypy`][mypy] to perform
@@ -181,7 +169,7 @@ a strict type-check.
 The package can be thoroughly tested by running the sessions tagged with `test`:
 
 ```console
-nox -t test
+uv run nox -t test
 ```
 
 This command will discover and run (via [`pytest`][pytest]) all tests across various
@@ -190,7 +178,7 @@ Python and Django environments and measure test coverage.
 For quicker runs, you can test the package by running `pytest` directly:
 
 ```console
-pytest
+uv run pytest
 ```
 
 However, this only tests against versions of Python and Django that are pinned to
@@ -213,7 +201,7 @@ Pre-commit runs automatically on each commit, but to check everything before com
 run:
 
 ```console
-pre-commit run -a
+uv run pre-commit run -a
 ```
 
 > For more information, see the project's [`.pre-commit-config.yaml`][pre-commit-config]
@@ -258,8 +246,7 @@ community!
 [pre-commit]: https://pre-commit.com
 [pre-commit-config]: https://github.com/paduszyk/django-management-commands/blob/main/.pre-commit-config.yaml
 [prettier]: https://prettier.io
-[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
-[pyenv]: https://github.com/pyenv/pyenv
-[pyproject.toml]: https://github.com/paduszyk/django-management-commands/blob/main/pyproject.toml
 [pytest]: https://docs.pytest.org/
 [ruff]: https://docs.astral.sh/ruff/
+[uv]: https://docs.astral.sh/uv/
+[nox-uv]: https://github.com/wntrblm/nox-uv
