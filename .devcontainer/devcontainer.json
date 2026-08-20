@@ -1,26 +1,24 @@
 {
-  "build": {
-    "args": {
-      "PYTHON_VERSIONS": "3.12 3.11 3.10 3.9"
-    },
-    "context": "..",
-    "dockerfile": "Dockerfile"
+  "containerEnv": {
+    "UV_LINK_MODE": "copy"
   },
+  "image": "ghcr.io/astral-sh/uv:0.12.5-python3.14-trixie-slim",
   "customizations": {
     "vscode": {
       "extensions": ["ms-python.python"],
       "settings": {
-        "python.defaultInterpreterPath": "~/.pyenv/versions/venv/bin/python",
-        "python.terminal.activateEnvironment": true
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
       }
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": false
+    "ghcr.io/devcontainers/features/common-utils:2.5.9": {
+      "configureZshAsDefaultShell": true,
+      "username": "root"
     },
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-    "ghcr.io/devcontainers/features/node:1": {}
+    "ghcr.io/devcontainers/features/node:2.1.0": {
+      "version": 24
+    }
   },
   "postCreateCommand": ".devcontainer/postCreateCommand.sh",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"

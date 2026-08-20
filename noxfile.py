@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import re
-from functools import cache, partial
-from itertools import chain
-from typing import Any
-
 import nox
+import nox_uv
 
 DJANGO_PYTHONS = {
     "4.2": [
@@ -26,30 +22,10 @@ DJANGO_PYTHONS = {
     ],
 }
 
-
-@cache
-def load_dev_dependencies() -> list[str]:
-    project: dict[str, Any] = nox.project.load_toml("pyproject.toml")["project"]
-
-    optional_dependencies: dict[str, list[str]] = project["optional-dependencies"]
-
-    return optional_dependencies["dev"]
-
-
-def match_dev_dependencies(*patterns: str) -> list[str]:
-    dev_dependencies = load_dev_dependencies()
-
-    return list(
-        chain.from_iterable(
-            filter(partial(re.match, pattern), dev_dependencies) for pattern in patterns
-        ),
-    )
-
-
 nox.options.sessions = ["ruff", "mypy", "pytest"]
 
 
-@nox.session(tags=["build"])
+@nox_uv.session(venv_backend="uv", tags=["build"])
 @nox.parametrize(
     "python",
     [
@@ -60,13 +36,11 @@ nox.options.sessions = ["ruff", "mypy", "pytest"]
     ],
 )
 def build(session: nox.Session) -> None:
-    session.install("build")
-
-    session.run("python", "-m", "build")
+    session.run("uv", "build")
     session.run("rm", "-rf", "dist", external=True)
 
 
-@nox.session(tags=["lint"])
+@nox_uv.session(venv_backend="uv", uv_only_groups=["ruff"], tags=["lint"])
 @nox.parametrize(
     "command",
     [
@@ -75,33 +49,19 @@ def build(session: nox.Session) -> None:
     ],
 )
 def ruff(session: nox.Session, command: str) -> None:
-    session.install(
-        *match_dev_dependencies(
-            r"^ruff ~=",
-        ),
-    )
-
     extra_options = session.posargs or []
 
     session.run("ruff", command, *extra_options, ".")
 
 
-@nox.session(tags=["lint"])
+@nox_uv.session(venv_backend="uv", uv_only_groups=["mypy"], tags=["lint"])
 def mypy(session: nox.Session) -> None:
-    session.install(
-        *match_dev_dependencies(
-            r"^django\-stubs\[compatible-mypy\] ~=",
-        ),
-        "-e",
-        ".",
-    )
-
     extra_options = session.posargs or ["--ignore-missing-imports"]
 
     session.run("mypy", *extra_options, ".")
 
 
-@nox.session(tags=["test"])
+@nox_uv.session(venv_backend="uv", uv_groups=["pytest"], tags=["test"])
 @nox.parametrize(
     ("django", "python"),
     [
@@ -111,14 +71,7 @@ def mypy(session: nox.Session) -> None:
     ],
 )
 def pytest(session: nox.Session, django: str) -> None:
-    session.install(
-        *match_dev_dependencies(
-            r"^pytest(-[\w\-]+)? ~=",
-        ),
-        f"django == {django}.*",
-        "-e",
-        ".",
-    )
+    session.install(f"django == {django}.*")
 
     extra_options = session.posargs or []
 

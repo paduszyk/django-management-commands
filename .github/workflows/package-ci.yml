@@ -17,7 +17,8 @@ jobs:
       test-sessions: ${{ steps.matrix.outputs.test-sessions }}
     steps:
       - uses: actions/checkout@v4
-      - uses: wntrblm/nox@main
+      - uses: astral-sh/setup-uv@v10.0.1
+      - run: uv sync --only-group nox --locked
       - id: matrix
         run: |
           for session in build lint test; do
@@ -34,8 +35,9 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - uses: wntrblm/nox@main
-      - run: nox -s "${{ matrix.session }}"
+      - uses: astral-sh/setup-uv@v10.0.1
+      - run: uv sync --only-group nox --locked
+      - run: uv run nox -s "${{ matrix.session }}"
   lint:
     name: ${{ matrix.session }}
     needs:
@@ -48,8 +50,9 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - uses: wntrblm/nox@main
-      - run: nox -s "${{ matrix.session }}"
+      - uses: astral-sh/setup-uv@v10.0.1
+      - run: uv sync --only-group nox --locked
+      - run: uv run nox -s "${{ matrix.session }}"
   test:
     name: ${{ matrix.session }}
     needs:
@@ -62,8 +65,9 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - uses: wntrblm/nox@main
-      - run: nox -s "${{ matrix.session }}"
+      - uses: astral-sh/setup-uv@v10.0.1
+      - run: uv sync --only-group nox --locked
+      - run: uv run nox -s "${{ matrix.session }}"
       - uses: actions/upload-artifact@v4
         with:
           name: coverage_${{ matrix.session }}
