@@ -22,7 +22,7 @@ jobs:
       - id: matrix
         run: |
           for session in build lint test; do
-            echo "${session}-sessions=$(nox -t $session -l --json | jq -c '[.[].session]')" >> $GITHUB_OUTPUT
+            echo "${session}-sessions=$(uv run nox -t $session -l --json | jq -c '[.[].session]')" >> $GITHUB_OUTPUT
           done
   build:
     name: ${{ matrix.session }}
