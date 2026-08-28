@@ -85,6 +85,18 @@ with:
 from management_commands.management import execute_from_command_line
 ```
 
+If you use `call_command` anywhere in your command, you then need to replace
+
+```python
+from django.core.management import call_command
+```
+
+with:
+
+```python
+from management_commands.management import call_command
+```
+
 That's it! No further steps are needed.
 
 ## Usage
@@ -209,6 +221,7 @@ and `myapp.commands.command` for an app installed from the `myapp` module.
 **Default:** `{}`
 
 Allows the definition of shortcuts or aliases for sequences of Django commands.
+Note: `call_command` does not support aliases.
 
 Example:
 
