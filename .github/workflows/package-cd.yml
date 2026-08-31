@@ -11,7 +11,7 @@ jobs:
     outputs:
       package-version: ${{ steps.package-version.outputs.package-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           cache: pip
@@ -33,7 +33,7 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: |
           if [ "${{ needs.build.outputs.package-version }}" != "${{ github.ref_name }}" ]; then
             exit 1
@@ -60,7 +60,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
