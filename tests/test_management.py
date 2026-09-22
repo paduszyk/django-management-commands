@@ -56,6 +56,71 @@ def test_execute_from_command_line_help_displays_paths_and_aliases(
     ) in captured.out
 
 
+def test_execute_from_command_line_help_displays_modules_and_submodules(
+    mocker: MockerFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # Mock.
+    mocker.patch.multiple(
+        "management_commands.management.settings",
+        MODULES=["module_a"],
+        SUBMODULES=["submodule_a"],
+    )
+
+    # Arrange.
+    app_config_a_mock = mocker.Mock()
+    app_config_a_mock.name = "app_a"
+
+    class CommandB(BaseCommand):
+        pass
+
+    # Mock.
+    mocker.patch(
+        "management_commands.core.apps.app_configs",
+        {"app_a": app_config_a_mock},
+    )
+
+    def import_string_side_effect(dotted_path: str) -> type:
+        if dotted_path == "module_a.command_b.Command":
+            return CommandB
+        if dotted_path == "app_a.submodule_a.command_b.Command":
+            return CommandB
+
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    def iterate_modules_side_effect(dotted_path: str) -> list[str]:
+        if dotted_path == "module_a":
+            return ["command_b"]
+        if dotted_path == "app_a.submodule_a":
+            return ["command_b"]
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.iterate_modules",
+        side_effect=iterate_modules_side_effect,
+    )
+
+    # Act.
+
+    execute_from_command_line(["manage.py", "--help"])
+    captured = capsys.readouterr()
+
+    # Assert.
+    assert (
+        "[django-management-commands: module_a]\n"
+        "    command_b\n"
+        "\n"
+        "[django-management-commands: app_a]\n"
+        "    command_b\n"
+        "\n"
+    ) in captured.out
+
+
 def test_execute_from_command_line_falls_back_to_django_management_utility_if_command_name_is_not_passed(
     mocker: MockerFixture,
 ) -> None:

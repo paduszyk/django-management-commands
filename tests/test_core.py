@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 
 from management_commands.core import (
     get_command_paths,
+    get_commands_from_modules_and_submodules,
     import_command_class,
     load_command_class,
 )
@@ -117,6 +118,81 @@ def test_get_command_paths_returns_list_of_all_dotted_paths_to_command_classes_i
         "app_a.submodule_a.command.Command",
         "app_a.submodule_b.command.Command",
     ]
+
+
+def test_get_commands_from_modules_and_submodules_returns_dictionary_of_available_commands(
+    mocker: MockerFixture,
+) -> None:
+    # Configure.
+    mocker.patch.multiple(
+        "management_commands.conf.settings",
+        MODULES=[
+            "module_a",
+            "module_b",  # no commands
+        ],
+        SUBMODULES=[
+            "submodule_a",
+            "submodule_b",  # no commands
+        ],
+    )
+
+    # Arrange.
+    app_config_a_mock = mocker.Mock()
+    app_config_a_mock.name = "app_a"
+    app_config_b_mock = mocker.Mock()  # no commands
+    app_config_b_mock.name = "app_b"
+
+    class CommandA:
+        pass
+
+    class CommandB(BaseCommand):
+        pass
+
+    # Mock.
+    mocker.patch(
+        "management_commands.core.apps.app_configs",
+        {
+            "app_a": app_config_a_mock,
+            "app_b": app_config_b_mock,
+        },
+    )
+
+    def import_string_side_effect(dotted_path: str) -> type:
+        if dotted_path == "module_a.command_a.Command":
+            return CommandA
+        if dotted_path == "module_a.command_b.Command":
+            return CommandB
+        if dotted_path == "app_a.submodule_a.command_a.Command":
+            return CommandA
+        if dotted_path == "app_a.submodule_a.command_b.Command":
+            return CommandB
+
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    def iterate_modules_side_effect(dotted_path: str) -> list[str]:
+        if dotted_path == "module_a":
+            return ["command_a", "command_b"]
+        if dotted_path == "app_a.submodule_a":
+            return ["command_a", "command_b"]
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.iterate_modules",
+        side_effect=iterate_modules_side_effect,
+    )
+
+    # Act.
+    commands = get_commands_from_modules_and_submodules()
+
+    # Assert.
+    assert set(commands.keys()) == {"module_a", "app_a"}
+    assert commands["module_a"] == ["command_b"]
+    assert commands["app_a"] == ["command_b"]
 
 
 def test_get_command_paths_returns_list_of_dotted_paths_to_app_submodules_if_app_label_specified(
