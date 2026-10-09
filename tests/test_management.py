@@ -7,7 +7,7 @@ import pytest
 from django.core.management import get_commands
 from django.core.management.base import BaseCommand
 
-from management_commands.management import execute_from_command_line
+from management_commands.management import call_command, execute_from_command_line
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
@@ -124,6 +124,41 @@ def test_execute_from_command_line_runs_command_from_path(
     command_run_from_argv_mock.assert_called_once()
 
 
+def test_call_command_runs_command_from_path(
+    mocker: MockerFixture,
+) -> None:
+    # Configure.
+    mocker.patch(
+        "management_commands.management.settings.PATHS",
+        {
+            "command": "module.Command",
+        },
+    )
+
+    # Arrange.
+    class Command(BaseCommand):
+        pass
+
+    # Mock.
+    def import_string_side_effect(dotted_path: str) -> type[BaseCommand]:
+        if dotted_path == "module.Command":
+            return Command
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    command_execute = mocker.patch.object(Command, "execute")
+
+    # Act.
+    call_command("command")
+
+    # Assert.
+    command_execute.assert_called_once()
+
+
 def test_execute_from_command_line_uses_django_management_utility_to_run_command_from_path(
     mocker: MockerFixture,
 ) -> None:
@@ -211,6 +246,28 @@ def test_execute_from_command_lines_runs_all_commands_assigned_to_alias(
     )
 
 
+def test_call_command_raises_on_alias(
+    mocker: MockerFixture,
+) -> None:
+    # Configure.
+    mocker.patch(
+        "management_commands.management.settings.ALIASES",
+        {
+            "alias": [
+                "command_a arg_a --option value_a",
+                "command_b arg_b --option value_b",
+            ],
+        },
+    )
+
+    # Assert.
+    with pytest.raises(
+        ValueError,
+        match="Running aliases from call_command is not supported",
+    ):
+        call_command("alias")
+
+
 def test_execute_from_command_line_prefers_path_command_over_django_core_command(
     mocker: MockerFixture,
     django_core_command_name: str,
@@ -245,6 +302,42 @@ def test_execute_from_command_line_prefers_path_command_over_django_core_command
 
     # Assert.
     command_run_from_argv_mock.assert_called_once()
+
+
+def test_call_command_prefers_path_command_over_django_core_command(
+    mocker: MockerFixture,
+    django_core_command_name: str,
+) -> None:
+    # Configure.
+    mocker.patch(
+        "management_commands.management.settings.PATHS",
+        {
+            django_core_command_name: "module.Command",
+        },
+    )
+
+    # Arrange.
+    class Command(BaseCommand):
+        pass
+
+    # Mock.
+    def import_string_side_effect(dotted_path: str) -> type[BaseCommand]:
+        if dotted_path == "module.Command":
+            return Command
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    command_execute = mocker.patch.object(Command, "execute")
+
+    # Act.
+    call_command(django_core_command_name)
+
+    # Assert.
+    command_execute.assert_called_once()
 
 
 def test_execute_from_command_line_prefers_path_command_over_alias(
@@ -299,6 +392,60 @@ def test_execute_from_command_line_prefers_path_command_over_alias(
 
     # Assert.
     command_a_run_from_argv_mock.assert_called_once()
+
+
+def test_call_command_prefers_path_command_over_alias(
+    mocker: MockerFixture,
+) -> None:
+    # Configure.
+    mocker.patch.multiple(
+        "management_commands.management.settings",
+        PATHS={
+            "command": "module.CommandA",
+        },
+        ALIASES={
+            "command": [
+                "command_b",
+            ],
+        },
+    )
+
+    # Arrange.
+    class CommandA(BaseCommand):
+        pass
+
+    class CommandB(BaseCommand):
+        pass
+
+    app_config_mock = mocker.Mock()
+    app_config_mock.name = "app"
+
+    # Mock.
+    def import_string_side_effect(dotted_path: str) -> type[BaseCommand]:
+        if dotted_path == "module.CommandA":
+            return CommandA
+        if dotted_path == "app.management.commands.command_b.Command":
+            return CommandB
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.apps.app_configs",
+        {
+            "app": app_config_mock,
+        },
+    )
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    command_a_execute_mock = mocker.patch.object(CommandA, "execute")
+
+    # Act.
+    call_command("command")
+
+    # Assert.
+    command_a_execute_mock.assert_called_once()
 
 
 def test_execute_from_command_line_prefers_alias_over_django_core_command(
@@ -445,6 +592,42 @@ def test_execute_from_command_line_runs_command_passed_with_explicit_app_label(
 
     # Assert.
     command_run_from_argv_mock.assert_called_once()
+
+
+def test_call_command_runs_command_passed_with_explicit_app_label(
+    mocker: MockerFixture,
+) -> None:
+    # Arrange.
+    class Command(BaseCommand):
+        pass
+
+    app_config_mock = mocker.Mock()
+    app_config_mock.name = "app"
+
+    # Mock.
+    def import_string_side_effect(dotted_path: str) -> type[BaseCommand]:
+        if dotted_path == "app.management.commands.command.Command":
+            return Command
+        raise ImportError
+
+    mocker.patch(
+        "management_commands.core.apps.app_configs",
+        {
+            "app": app_config_mock,
+        },
+    )
+    mocker.patch(
+        "management_commands.core.import_string",
+        side_effect=import_string_side_effect,
+    )
+
+    command_execute_mock = mocker.patch.object(Command, "execute")
+
+    # Act.
+    call_command("app.command")
+
+    # Assert.
+    command_execute_mock.assert_called_once()
 
 
 def test_execute_from_command_line_runs_command_defined_in_path_when_referenced_by_alias(
