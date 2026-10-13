@@ -16,7 +16,7 @@
       "configureZshAsDefaultShell": true,
       "username": "root"
     },
-    "ghcr.io/devcontainers/features/node:2.1.0": {
+    "ghcr.io/devcontainers/features/node:2.1.1": {
       "version": 24
     }
   },
